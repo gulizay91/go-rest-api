@@ -1,0 +1,70 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "UserApi",
+    "dateExported": "2023-12-31T20:07:09.886Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "2395f982-f788-477c-8f73-37f32361c96c",
+            "colId": "71ba164f-5c12-48d3-a1cc-e81c250b20b2",
+            "containerId": "",
+            "name": "GetUser",
+            "url": "http://localhost:8091/api/v1/users/1",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-12-31T13:43:52.276Z",
+            "modified": "2023-12-31T19:16:07.788Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1bb05478-e72c-457a-88df-a435c9b897f4",
+            "colId": "71ba164f-5c12-48d3-a1cc-e81c250b20b2",
+            "containerId": "",
+            "name": "healthcheck",
+            "url": "http://localhost:8091/health",
+            "method": "GET",
+            "sortNum": 12500,
+            "created": "2023-12-31T17:58:33.381Z",
+            "modified": "2023-12-31T18:01:02.442Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "6f41ca28-412c-41be-a935-fa80b66df088",
+            "colId": "71ba164f-5c12-48d3-a1cc-e81c250b20b2",
+            "containerId": "",
+            "name": "DeleteUser",
+            "url": "http://localhost:8091/api/v1/user/6591ac0f0511dde56fc0c834",
+            "method": "DELETE",
+            "sortNum": 15000,
+            "created": "2023-12-31T15:48:56.755Z",
+            "modified": "2023-12-31T17:59:56.192Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "ebd829c7-78f8-48e9-bbfb-780c3dbc0c36",
+            "colId": "71ba164f-5c12-48d3-a1cc-e81c250b20b2",
+            "containerId": "",
+            "name": "CreateUser",
+            "url": "http://localhost:8091/api/v1/user",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-12-31T14:19:56.086Z",
+            "modified": "2023-12-31T17:59:23.654Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"SubId\": \"1\",\n  \"FirstName\": \"guliz\",\n  \"LastName\": \"ay\",\n  \"Email\": \"aaaa@bbb.com\",\n  \"PhoneNumber\": \"1111111\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}

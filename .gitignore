@@ -17,5 +17,12 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# Visual Studio Code
+.vscode
+
+# Rider
+.idea/
+
 # Go workspace file
 go.work
+.env.dev.yaml

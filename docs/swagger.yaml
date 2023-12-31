@@ -1,0 +1,124 @@
+basePath: /
+definitions:
+  models.UserModel:
+    properties:
+      birthDate:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      phoneNumber:
+        type: string
+      subId:
+        type: string
+    type: object
+host: localhost:8091
+info:
+  contact:
+    email: gulizay91@gmail.com
+    name: GulizAY
+    url: https://github.com/gulizay91
+  description: Go - RESTful
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://swagger.io/terms/
+  title: Go Rest API Starter Doc
+  version: "1.0"
+paths:
+  /api/v1/user:
+    post:
+      consumes:
+      - '*/*'
+      description: create user
+      parameters:
+      - description: User
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: create user
+      tags:
+      - users
+  /api/v1/user/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete user
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: delete user
+      tags:
+      - users
+  /api/v1/users/{subId}:
+    get:
+      consumes:
+      - '*/*'
+      description: get user
+      parameters:
+      - description: subId
+        in: path
+        name: subId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: get user
+      tags:
+      - users
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Bearer-Token
+    type: apiKey
+swagger: "2.0"
