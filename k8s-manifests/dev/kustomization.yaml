@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: moon-dev
+#namePrefix: dev-
+resources:
+- ../base
+- hpa.yaml
+- ingress.yaml
+commonLabels:
+  environment: development
+patches:
+- path: patch-deployment.yaml
+configMapGenerator:
+  - name: go-rest-api-configs
+    behavior: merge
+    envs:
+      - .env

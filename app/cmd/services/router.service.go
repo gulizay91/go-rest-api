@@ -16,5 +16,5 @@ func InitRouter() {
 	routers.NewRouter(userHandler, appRouter).AddRouter()
 
 	log.Printf("Now Listen %s:%s", config.Server.Addr, config.Server.Port)
-	appRouter.Listen(config.Server.Addr + ":" + config.Server.Port)
+	appRouter.Listen(":" + config.Server.Port)
 }

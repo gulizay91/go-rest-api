@@ -20,9 +20,11 @@
 # Visual Studio Code
 .vscode
 
-# Rider
+# JetBrains
 .idea/
+*.DS_Store
 
 # Go workspace file
 go.work
-.env.dev.yaml
+env.development.yaml
+.env

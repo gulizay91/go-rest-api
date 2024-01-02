@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: go-rest-api
+  name: go-rest-api
+spec:
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: go-rest-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 10%
+  template:
+    metadata:
+      labels:
+        app: go-rest-api
+    spec:
+      containers:
+        - image: guliz91/go-rest-api:latest
+          imagePullPolicy: Always
+          name: go-rest-api
+          envFrom:
+            - configMapRef:
+                name: go-rest-api-configs
+          ports:
+            - containerPort: 8091
+          resources:
+            requests:
+              cpu: 128m
+              memory: 300Mi
+            limits:
+              cpu: 256m
+              memory: 500Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8091
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              #path: /ready
+              path: /health
+              port: 8091
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3

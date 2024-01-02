@@ -36,7 +36,7 @@ func (config ServerConfig) Validate() error {
 }
 
 type ServiceConfig struct {
-	LogLevel    string
+	LogLevel    string `mapstructure:"logLevel"`
 	Name        string
 	Environment string
 }

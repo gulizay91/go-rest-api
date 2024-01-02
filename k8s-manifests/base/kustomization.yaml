@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: moon
+resources:
+  - deployment.yaml
+  - service.yaml
+configMapGenerator:
+  - name: go-rest-api-configs
+    behavior: create
+    envs:
+      - .env
+commonLabels:
+  tier: backend
+  app: go-rest-api
