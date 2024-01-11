@@ -1,3 +1,6 @@
+############################
+# STEP 1 build executable binary -> 1.56GB
+############################
 FROM golang:1.21.0 as builder
 
 
@@ -10,31 +13,32 @@ RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
 && apt-get -y install curl \
 && apt install gettext-base
 
-
-ENV GO111MODULE=on
-
-RUN go mod download
-RUN go mod verify
+RUN go mod tidy
 
 COPY . /app
 
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+ENV GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
+RUN go build -o bin /app/cmd
+
+############################
+# STEP 2 build a small image -> 31.69MB
+############################
+FROM scratch
+WORKDIR /app/cmd
+# Copy our static executable.
+COPY --from=builder /app /app
+#COPY --from=builder /app/bin /app/bin
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 #ENV SERVICE_ENVIRONMENT=development
 ENV TEST_KEY=cameFromDockerfile-testKey
-
+ENV service.logLevel=panic
 ARG SERVER_PORT=8091
 ARG SERVER_ADRR=127.0.0.1
 ENV PORT $SERVER_PORT
 ENV HOST $SERVER_ADRR
 EXPOSE $PORT
 
-RUN export TEST_KEY
-
-WORKDIR /app/cmd
-#RUN go build -o bin/server main.go
-#CMD ./bin/server
-RUN go build -o go-rest-api .
-
-
-ENTRYPOINT ["./go-rest-api"]
+# Run the app binary.
+CMD ["/app/bin"]

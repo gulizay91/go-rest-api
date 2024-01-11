@@ -55,7 +55,8 @@ go install github.com/swaggo/swag/cmd/swag@latest
 
 ## Generate Swagger Doc
 ```sh
-swag init -g ./app/cmd/main.go
+# /lemodate-profile-api>app>
+swag init -g ./cmd/main.go
 ```
 
 ## Docker
@@ -63,6 +64,7 @@ swag init -g ./app/cmd/main.go
 ```sh
 # /go-rest-api>
 docker build -t go-rest-api ./app
+docker run -p 8091:8091 -e SERVICE_ENVIRONMENT=development --name go-rest-api go-rest-api
 ```
 
 ### push image to docker hub
