@@ -64,7 +64,7 @@ swag init -g ./cmd/main.go
 ```sh
 # /go-rest-api>
 docker build -t go-rest-api ./app
-docker run -p 8091:8091 -e SERVICE_ENVIRONMENT=development --name go-rest-api go-rest-api
+docker run -p 8091:8091 -e SERVICE__ENVIRONMENT=development --name go-rest-api go-rest-api
 ```
 
 ### push image to docker hub

@@ -32,13 +32,15 @@ COPY --from=builder /app /app
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 #ENV SERVICE_ENVIRONMENT=development
-ENV TEST_KEY=cameFromDockerfile-testKey
-ENV service.logLevel=panic
+ENV TEST_KEY cameFromDockerfile
+ENV K8SCLUSTER cameFromDockerfile
+ENV VAULTOPTIONS__MOUNTPOINT cameFromDockerfile
+
 ARG SERVER_PORT=8091
 ARG SERVER_ADRR=127.0.0.1
-ENV PORT $SERVER_PORT
-ENV HOST $SERVER_ADRR
-EXPOSE $PORT
+ENV SERVER__PORT $SERVER_PORT
+ENV SERVER__ADRR $SERVER_ADRR
+EXPOSE $SERVER_PORT
 
 # Run the app binary.
 CMD ["/app/bin"]

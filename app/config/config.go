@@ -6,9 +6,13 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig  `mapstructure:"server"`
-	Service ServiceConfig `mapstructure:"service"`
-	MongoDB MongoConfig   `mapstructure:"mongoDB"`
+	Server        ServerConfig  `mapstructure:"server"`
+	Service       ServiceConfig `mapstructure:"service"`
+	MongoDB       MongoConfig   `mapstructure:"mongoDB"`
+	K8sCluster    string        `mapstructure:"k8sCluster"`
+	TestKey       string        `mapstructure:"testKey"`
+	TestAnchorKey string        `mapstructure:"testAnchorKey"`
+	VaultOptions  VaultOptions  `mapstructure:"vaultOptions"`
 }
 
 func (config *Config) Validate() error {
@@ -62,4 +66,9 @@ func (config MongoConfig) Validate() error {
 		validation.Field(&config.Database, validation.Required),
 	)
 	return err
+}
+
+type VaultOptions struct {
+	MountPoint    string
+	TestAnchorKey string
 }
