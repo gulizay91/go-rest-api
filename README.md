@@ -66,6 +66,12 @@ swag init -g ./cmd/main.go
 docker build -t go-rest-api ./app
 docker run -p 8091:8091 -e SERVICE__ENVIRONMENT=development --name go-rest-api go-rest-api
 ```
+or you can use phony target
+```sh
+# /go-rest-api>
+make run_restapi
+make stop_restapi
+```
 
 ### push image to docker hub
 ```sh
