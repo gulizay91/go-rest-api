@@ -2,12 +2,14 @@ module github.com/gulizay91/go-rest-api
 
 go 1.21.5
 
-require github.com/spf13/viper v1.18.2
+require (
+	github.com/gofiber/swagger v0.1.14
+	github.com/spf13/viper v1.18.2
+	github.com/swaggo/swag v1.16.2
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/PuerkitoBio/purell v1.2.1 // indirect
-	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
@@ -17,7 +19,6 @@ require (
 	github.com/go-openapi/swag v0.22.7 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/gofiber/swagger v0.1.14 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -30,7 +31,6 @@ require (
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
-	github.com/swaggo/swag v1.16.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -42,7 +42,6 @@ require (
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/tools v0.16.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (
