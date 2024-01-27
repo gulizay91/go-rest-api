@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type IUserRepository interface {
@@ -16,6 +17,7 @@ type IUserRepository interface {
 	GetAll() ([]entities.User, error)
 	Get(subId string) (entities.User, error)
 	Delete(id primitive.ObjectID) (bool, error)
+	GetCollectionIndexes() []mongo.IndexModel
 }
 
 type UserRepository struct {
@@ -26,8 +28,23 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 	return UserRepository{Users: collection}
 }
 
-func (r UserRepository) Insert(user entities.User) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r UserRepository) GetCollectionIndexes() []mongo.IndexModel {
+	indexes := []mongo.IndexModel{}
+	// compound unique index
+	indexes = append(indexes, mongo.IndexModel{
+		Keys:    bson.D{{Key: "subId", Value: 1}, {Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	})
+	// index
+	indexes = append(indexes, mongo.IndexModel{
+		Keys:    bson.D{{Key: "subId", Value: 1}},
+		Options: options.Index(),
+	})
+	return indexes
+}
+
+func (r UserRepository) Insert(user *entities.User) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
 	defer cancel()
 
 	if user.Id == primitive.NilObjectID {
@@ -36,7 +53,7 @@ func (r UserRepository) Insert(user entities.User) (bool, error) {
 
 	result, err := r.Users.InsertOne(ctx, user)
 
-	if result.InsertedID == nil || err != nil {
+	if err != nil || result.InsertedID == nil {
 		return false, err
 	}
 	return true, nil

@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gulizay91/go-rest-api/pkg/mappers"
 	"github.com/gulizay91/go-rest-api/pkg/models"
 	"github.com/gulizay91/go-rest-api/pkg/repository/entities"
 	"github.com/gulizay91/go-rest-api/pkg/service"
+	"github.com/gulizay91/go-rest-api/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -28,23 +31,26 @@ func NewUserHandler(service service.UserService) UserHandler {
 // @Success 200 {object} map[string]interface{}
 // @Router /api/v1/user [post]
 func (h UserHandler) CreateUser(c *fiber.Ctx) error {
-	var user models.UserModel
-
+	var user *models.UserModel
+	result := models.NewErrorServiceResponseModel(nil)
+	result.StatusCode = http.StatusBadRequest
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
+		result.Message = err.Error()
+		return c.Status(result.StatusCode).JSON(result)
 	}
-	var newUserEntity entities.User = entities.User{
-		SubId:       user.SubId,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		//BirthDate: primitive.NewDateTimeFromTime(user.BirthDate),
+
+	if err := utils.Validate(user); err != nil {
+		result.Data = err
+		result.Message = "Validation failed"
+		return c.Status(result.StatusCode).JSON(result)
 	}
+	var newUserEntity *entities.User = mappers.MapUserModelToUser(user)
+	newUserEntity.CreatedDate = primitive.NewDateTimeFromTime(time.Now().UTC())
+	newUserEntity.UpdatedDate = primitive.NewDateTimeFromTime(time.Now().UTC())
 	result, err := h.Service.Insert(newUserEntity)
 
 	if err != nil || result.Success == false {
-		return err
+		return c.Status(result.StatusCode).JSON(result)
 	}
 
 	return c.Status(http.StatusCreated).JSON(result)

@@ -18,18 +18,19 @@ func RegisterRepositories(config *configs.Config) {
 	mongoDBClient = connectMongoDB(config)
 
 	userCollection := getCollection(mongoDBClient, config.MongoDB.Database, "users")
-	userRepository = repository.NewUserRepository(userCollection)
+	registerUserRepository(userCollection)
 }
 
 func connectMongoDB(config *configs.Config) *mongo.Client {
-
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(config.MongoDB.Uri).SetTimeout(20*time.Second))
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MongoDB.Uri))
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	err = client.Ping(nil, nil)
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -40,4 +41,23 @@ func connectMongoDB(config *configs.Config) *mongo.Client {
 
 func getCollection(client *mongo.Client, dbName string, collectionName string) *mongo.Collection {
 	return client.Database(dbName).Collection(collectionName)
+}
+
+func ensureIndexes(collection *mongo.Collection, indexes []mongo.IndexModel) error {
+
+	opts := options.CreateIndexes().SetMaxTime(5 * time.Second)
+	_, err := collection.Indexes().CreateMany(context.Background(), indexes, opts)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func registerUserRepository(collection *mongo.Collection) {
+	userRepository = repository.NewUserRepository(collection)
+	userCollectionIndexes := userRepository.GetCollectionIndexes()
+	err := ensureIndexes(collection, userCollectionIndexes)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }

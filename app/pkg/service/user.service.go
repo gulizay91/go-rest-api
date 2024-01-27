@@ -1,10 +1,13 @@
 package service
 
 import (
+	"net/http"
+
 	"github.com/gulizay91/go-rest-api/pkg/models"
 	"github.com/gulizay91/go-rest-api/pkg/repository"
 	"github.com/gulizay91/go-rest-api/pkg/repository/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type IUserService interface {
@@ -21,14 +24,11 @@ func NewUserService(Repo repository.UserRepository) UserService {
 	return UserService{Repo: Repo}
 }
 
-func (s UserService) Insert(userEntity entities.User) (*models.ServiceResponseModel, error) {
-	var newUser models.UserModel
-	var res models.ServiceResponseModel = models.ServiceResponseModel{
-		Data:    &newUser,
-		Success: false,
-	}
+func (s UserService) Insert(userEntity *entities.User) (*models.ServiceResponseModel, error) {
+	var res models.ServiceResponseModel = *models.NewErrorServiceResponseModel(nil)
 	if len(userEntity.FirstName) <= 2 {
 		res.Message = "FirstName must be valid!"
+		res.StatusCode = http.StatusBadRequest
 		return &res, nil
 	}
 
@@ -40,27 +40,21 @@ func (s UserService) Insert(userEntity entities.User) (*models.ServiceResponseMo
 		return &res, err
 	}
 
-	res = models.ServiceResponseModel{
-		Data: models.UserModel{
-			Id:          userEntity.Id.String(),
-			SubId:       userEntity.SubId,
-			FirstName:   userEntity.FirstName,
-			LastName:    userEntity.LastName,
-			Email:       userEntity.Email,
-			PhoneNumber: userEntity.PhoneNumber,
-			BirthDate:   userEntity.BirthDate.Time().String(),
-		},
-		Success: true,
+	if err != nil || result == false {
+		res.Message = err.Error()
+		if mongo.IsDuplicateKeyError(err) {
+			res.StatusCode = http.StatusConflict
+		}
+		return &res, err
 	}
+
+	res = *models.NewSuccessServiceResponseModel(userEntity)
+	res.StatusCode = http.StatusCreated
 	return &res, nil
 }
 
 func (s UserService) Get(subId string) (*models.ServiceResponseModel, error) {
-	var res models.ServiceResponseModel = models.ServiceResponseModel{
-		Data:       nil,
-		Success:    false,
-		StatusCode: "500",
-	}
+	var res models.ServiceResponseModel = *models.NewErrorServiceResponseModel(nil)
 	result, err := s.Repo.Get(subId)
 	if err != nil {
 		res.Message = err.Error()
@@ -69,23 +63,11 @@ func (s UserService) Get(subId string) (*models.ServiceResponseModel, error) {
 
 	if result.Id == primitive.NilObjectID {
 		res.Message = "mongo: no documents in result"
-		res.StatusCode = "404"
+		res.StatusCode = http.StatusNotFound
 		return &res, nil
 	}
 
-	res = models.ServiceResponseModel{
-		Data: models.UserModel{
-			Id:          result.Id.String(),
-			SubId:       result.SubId,
-			FirstName:   result.FirstName,
-			LastName:    result.LastName,
-			Email:       result.Email,
-			PhoneNumber: result.PhoneNumber,
-			BirthDate:   result.BirthDate.Time().String(),
-		},
-		Success:    true,
-		StatusCode: "200",
-	}
+	res = *models.NewSuccessServiceResponseModel(result)
 	return &res, nil
 }
 
