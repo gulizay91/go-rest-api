@@ -3,12 +3,14 @@ package utils
 import (
 	"log"
 
-	"github.com/gulizay91/go-rest-api/pkg/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/gulizay91/go-rest-api/pkg/models"
 )
 
 func Validate(model interface{}) *[]models.ValidationErrors {
-	err := validator.New().Struct(model)
+	v := validator.New()
+	RegisterEnumValidator(v)
+	err := v.Struct(model)
 	if err == nil {
 		log.Println("Validation succeeded")
 		return nil
@@ -22,4 +24,19 @@ func Validate(model interface{}) *[]models.ValidationErrors {
 	}
 
 	return &validationErrors
+}
+
+type EnumValid interface {
+	Valid() bool
+}
+
+func RegisterEnumValidator(v *validator.Validate) {
+	v.RegisterValidation("enum", ValidateEnum)
+}
+
+func ValidateEnum(fl validator.FieldLevel) bool {
+	if enum, ok := fl.Field().Interface().(EnumValid); ok {
+		return enum.Valid()
+	}
+	return false
 }

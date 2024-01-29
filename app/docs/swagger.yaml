@@ -1,21 +1,71 @@
 basePath: /
 definitions:
-  models.UserModel:
+  github_com_gulizay91_go-rest-api_pkg_models.Gender:
+    enum:
+    - female
+    - male
+    - non-binary
+    - intersex
+    type: string
+    x-enum-varnames:
+    - Female
+    - Male
+    - NonBinary
+    - Intersex
+  github_com_gulizay91_go-rest-api_pkg_models.Media:
     properties:
-      birthDate:
+      images:
+        items:
+          type: string
+        type: array
+    required:
+    - images
+    type: object
+  github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel:
+    properties:
+      data: {}
+      errorCode:
         type: string
+      message:
+        type: string
+      statusCode:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  github_com_gulizay91_go-rest-api_pkg_models.UserModel:
+    properties:
+      _id:
+        type: string
+      birthDate:
+        type: integer
+      createdDate:
+        type: integer
       email:
         type: string
       firstName:
+        maxLength: 50
         type: string
-      id:
-        type: string
+      gender:
+        allOf:
+        - $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Gender'
+        example: female
       lastName:
+        maxLength: 50
         type: string
+      media:
+        $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Media'
       phoneNumber:
         type: string
       subId:
         type: string
+      updatedDate:
+        type: integer
+    required:
+    - email
+    - firstName
+    - lastName
+    - subId
     type: object
 host: localhost:8091
 info:
@@ -39,18 +89,29 @@ paths:
       parameters:
       - description: User
         in: body
-        name: payload
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/models.UserModel'
+          $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.UserModel'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
       summary: create user
       tags:
       - users
@@ -93,8 +154,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
       summary: get user
       tags:
       - users

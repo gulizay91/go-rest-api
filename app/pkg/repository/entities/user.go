@@ -12,7 +12,7 @@ type User struct {
 	Email       string              `bson:"email"`
 	PhoneNumber *string             `bson:"phoneNumber,omitempty"`
 	BirthDate   *primitive.DateTime `bson:"birthDate,omitempty"`
-	Gender      *string             `bson:"gender,omitempty"`
+	Gender      string              `bson:"gender"`
 	Media       *Media              `bson:"media,omitempty"`
 }
 

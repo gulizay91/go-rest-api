@@ -37,20 +37,37 @@
                 "parameters": [
                     {
                         "description": "User",
-                        "name": "payload",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserModel"
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.UserModel"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
                         }
                     }
                 }
@@ -115,8 +132,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
                         }
                     }
                 }
@@ -148,29 +176,101 @@
         }
     },
     "definitions": {
-        "models.UserModel": {
+        "github_com_gulizay91_go-rest-api_pkg_models.Gender": {
+            "type": "string",
+            "enum": [
+                "female",
+                "male",
+                "non-binary",
+                "intersex"
+            ],
+            "x-enum-varnames": [
+                "Female",
+                "Male",
+                "NonBinary",
+                "Intersex"
+            ]
+        },
+        "github_com_gulizay91_go-rest-api_pkg_models.Media": {
+            "type": "object",
+            "required": [
+                "images"
+            ],
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel": {
             "type": "object",
             "properties": {
-                "birthDate": {
+                "data": {},
+                "errorCode": {
                     "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_gulizay91_go-rest-api_pkg_models.UserModel": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstName",
+                "lastName",
+                "subId"
+            ],
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "birthDate": {
+                    "type": "integer"
+                },
+                "createdDate": {
+                    "type": "integer"
                 },
                 "email": {
                     "type": "string"
                 },
                 "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
                 },
-                "id": {
-                    "type": "string"
+                "gender": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Gender"
+                        }
+                    ],
+                    "example": "female"
                 },
                 "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "media": {
+                    "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Media"
                 },
                 "phoneNumber": {
                     "type": "string"
                 },
                 "subId": {
                     "type": "string"
+                },
+                "updatedDate": {
+                    "type": "integer"
                 }
             }
         }

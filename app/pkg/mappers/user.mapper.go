@@ -14,7 +14,7 @@ func MapUserModelToUser(userModel *models.UserModel) *entities.User {
 		Email:       userModel.Email,
 		PhoneNumber: userModel.PhoneNumber,
 		BirthDate:   userModel.BirthDate,
-		Gender:      userModel.Gender,
+		Gender:      string(userModel.Gender),
 		Media:       MapMediaModelToEntity(userModel.Media),
 	}
 }

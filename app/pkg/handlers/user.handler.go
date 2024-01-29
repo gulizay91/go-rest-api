@@ -27,8 +27,11 @@ func NewUserHandler(service service.UserService) UserHandler {
 // @Tags users
 // @Accept */*
 // @Produce json
-// @Param   payload body  models.UserModel true "User"
-// @Success 200 {object} map[string]interface{}
+// @Param   user body  models.UserModel true "User"
+// @Success 201 {object} models.ServiceResponseModel
+// @Failure 400 {object} models.ServiceResponseModel
+// @Failure 409 {object} models.ServiceResponseModel
+// @Failure 500 {object} models.ServiceResponseModel
 // @Router /api/v1/user [post]
 func (h UserHandler) CreateUser(c *fiber.Ctx) error {
 	var user *models.UserModel
@@ -63,7 +66,9 @@ func (h UserHandler) CreateUser(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Param  subId  path string true  "subId"
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} models.ServiceResponseModel
+// @Failure 404 {object} models.ServiceResponseModel
+// @Failure 500 {object} models.ServiceResponseModel
 // @Router /api/v1/users/{subId} [get]
 func (h UserHandler) GetUser(c *fiber.Ctx) error {
 	subId := c.Params("subId")

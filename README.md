@@ -56,7 +56,7 @@ go install github.com/swaggo/swag/cmd/swag@latest
 ## Generate Swagger Doc
 ```sh
 # /lemodate-profile-api>app>
-swag init -g ./cmd/main.go
+swag init --parseDependency -g cmd/main.go -o docs
 ```
 
 ## Docker
