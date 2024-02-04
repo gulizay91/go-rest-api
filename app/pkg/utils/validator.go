@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"log"
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gulizay91/go-rest-api/pkg/models"
@@ -12,14 +12,14 @@ func Validate(model interface{}) *[]models.ValidationErrors {
 	RegisterEnumValidator(v)
 	err := v.Struct(model)
 	if err == nil {
-		log.Println("Validation succeeded")
+		log.Trace("Validation succeeded.")
 		return nil
 	}
 
 	var validationErrors []models.ValidationErrors
-	log.Println("Validation failed:")
+	log.Warn("Validation failed:")
 	for _, e := range err.(validator.ValidationErrors) {
-		log.Printf("Field: %s, Error: %s\n", e.Field(), e.Tag())
+		log.Warn("Field: %s, Error: %s\n", e.Field(), e.Tag())
 		validationErrors = append(validationErrors, models.ValidationErrors{Field: e.StructNamespace(), Error: e.Tag()})
 	}
 

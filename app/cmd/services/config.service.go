@@ -1,7 +1,8 @@
 package services
 
 import (
-	"log"
+	"github.com/gofiber/fiber/v2/log"
+	stdLog "log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,17 +16,12 @@ var config *configs.Config
 func InitConfig() {
 	v := viper.New()
 
-	log.Printf("env>SERVICE__ENVIRONMENT: %s", os.Getenv("SERVICE__ENVIRONMENT"))
-	log.Printf("env>SERVICE_ENVIRONMENT: %s", os.Getenv("SERVICE_ENVIRONMENT"))
-	log.Printf("env>TEST_KEY: %s", os.Getenv("TEST_KEY"))
-	log.Printf("env>k8sCluster: %s", os.Getenv("k8sCluster"))
-
 	var environment = os.Getenv("SERVICE__ENVIRONMENT")
 	configName := "env"
 	if environment != "" {
 		configName = "env." + environment
 	}
-	log.Printf("configName: %s", configName)
+	stdLog.Printf("configName: %s", configName)
 	//v.SetDefault("SERVER_PORT", "8080")
 	//v.SetConfigType("dotenv")
 	v.SetConfigType("yaml")
@@ -34,7 +30,7 @@ func InitConfig() {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("workdir: %s", wd)
+	stdLog.Printf("workdir: %s", wd)
 	//v.AddConfigPath("../")
 	v.AddConfigPath(filepath.Dir(wd))
 	v.AutomaticEnv()
@@ -59,14 +55,46 @@ func InitConfig() {
 		panic(err)
 	}
 
-	log.Printf("config>server.addr: %s", config.Server.Addr)
-	log.Printf("config>server.port: %s", config.Server.Port)
-	log.Printf("config>service.name: %s", config.Service.Name)
-	log.Printf("config>service.logLevel: %s", config.Service.LogLevel)
-	log.Printf("config>service.environment: %s", config.Service.Environment)
-	log.Printf("config>testKey: %s", config.TestKey)
-	log.Printf("config>k8sCluster: %s", config.K8sCluster)
-	log.Printf("config>testAnchorKey: %s", config.TestAnchorKey)
-	log.Printf("config>vaultOptions.mountPoint: %s", config.VaultOptions.MountPoint)
-	log.Printf("config>vaultOptions.testAnchorKey: %s", config.VaultOptions.TestAnchorKey)
+	logLevel := getLogLevel(config.Service.LogLevel)
+	log.SetLevel(logLevel)
+
+	log.Debugf("env>SERVICE__ENVIRONMENT: %s", os.Getenv("SERVICE__ENVIRONMENT"))
+	log.Debugf("env>SERVICE_ENVIRONMENT: %s", os.Getenv("SERVICE_ENVIRONMENT"))
+	log.Debugf("env>TEST_KEY: %s", os.Getenv("TEST_KEY"))
+	log.Debugf("env>k8sCluster: %s", os.Getenv("k8sCluster"))
+	log.Debugf("config>server.addr: %s", config.Server.Addr)
+	log.Debugf("config>server.port: %s", config.Server.Port)
+	log.Debugf("config>service.name: %s", config.Service.Name)
+	log.Debugf("config>service.logLevel: %s", config.Service.LogLevel)
+	log.Debugf("config>service.environment: %s", config.Service.Environment)
+	log.Debugf("config>testKey: %s", config.TestKey)
+	log.Debugf("config>k8sCluster: %s", config.K8sCluster)
+	log.Debugf("config>testAnchorKey: %s", config.TestAnchorKey)
+	log.Debugf("config>vaultOptions.mountPoint: %s", config.VaultOptions.MountPoint)
+	log.Debugf("config>vaultOptions.testAnchorKey: %s", config.VaultOptions.TestAnchorKey)
+}
+
+func getLogLevel(strLogLevel string) log.Level {
+	logLevel := log.LevelInfo
+	switch strLogLevel {
+	case "trace":
+		logLevel = log.LevelTrace
+		break
+	case "debug":
+		logLevel = log.LevelDebug
+		break
+	case "warn":
+		logLevel = log.LevelWarn
+		break
+	case "error":
+		logLevel = log.LevelError
+		break
+	case "fatal":
+		logLevel = log.LevelFatal
+		break
+	case "panic":
+		logLevel = log.LevelPanic
+		break
+	}
+	return logLevel
 }

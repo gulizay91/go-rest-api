@@ -1,14 +1,14 @@
 package services
 
-import "log"
+import stdLog "log"
 
 func Run() {
 	InitConfig()
-	log.Printf("Init Config for %s", config.Service.Name)
+	stdLog.Printf("Configuration Initialized for %s", config.Service.Name)
 
 	RegisterRepositories(config)
-	log.Printf("Register Repositories for %s", config.Service.Name)
+	stdLog.Printf("Repositories Registered for %s database", config.MongoDB.Database)
 
-	InitRouter()
-	log.Printf("Init Routers for %s", config.Service.Name)
+	app := InitFiber()
+	RegisterGracefulShutdown(app)
 }

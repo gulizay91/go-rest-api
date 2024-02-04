@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"log"
+	stdLog "log"
 	"time"
 
 	configs "github.com/gulizay91/go-rest-api/config"
@@ -27,15 +27,15 @@ func connectMongoDB(config *configs.Config) *mongo.Client {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MongoDB.Uri))
 
 	if err != nil {
-		log.Fatalln(err)
+		stdLog.Fatalln(err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalln(err)
+		stdLog.Fatalln(err)
 	}
 
-	log.Printf("Ping %s", config.MongoDB.Database)
+	stdLog.Printf("Ping mongo database %s", config.MongoDB.Database)
 	return client
 }
 
@@ -58,6 +58,6 @@ func registerUserRepository(collection *mongo.Collection) {
 	userCollectionIndexes := userRepository.GetCollectionIndexes()
 	err := ensureIndexes(collection, userCollectionIndexes)
 	if err != nil {
-		log.Fatalln(err)
+		stdLog.Fatalln(err)
 	}
 }

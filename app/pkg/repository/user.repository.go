@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"github.com/gofiber/fiber/v2/log"
 	"time"
 
 	"github.com/gulizay91/go-rest-api/pkg/repository/entities"
@@ -69,13 +69,13 @@ func (r UserRepository) GetAll() ([]entities.User, error) {
 	result, err := r.Users.Find(ctx, bson.M{})
 
 	if err != nil {
-		log.Panicln(err)
+		log.Panic(err)
 		return nil, err
 	}
 
 	for result.Next(ctx) {
 		if err := result.Decode(&user); err != nil {
-			log.Panicln(err)
+			log.Panic(err)
 			return nil, err
 		}
 		users = append(users, user)
@@ -101,7 +101,7 @@ func (r UserRepository) Get(subId string) (entities.User, error) {
 			return user, nil
 		}
 
-		log.Panicln(err)
+		log.Panic(err)
 		return user, err
 	}
 

@@ -2,7 +2,7 @@ package models
 
 import "net/http"
 
-// swagger:model
+// swagger:model ServiceResponseModel
 type ServiceResponseModel struct {
 	Data       interface{} `json:"data"`
 	Success    bool        `json:"success,omitempty"`
