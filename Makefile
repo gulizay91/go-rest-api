@@ -1,4 +1,4 @@
-.PHONY: run_restapi stop_restapi
+.PHONY: run_restapi stop_restapi docker_latest_image
 
 run_restapi:
 	docker build -t go-rest-api ./app && \
@@ -6,3 +6,8 @@ run_restapi:
 
 stop_restapi:
 	docker stop go-rest-api
+
+docker_latest_image:
+	docker build -t go-rest-api ./app && \
+		docker tag go-rest-api guliz91/go-rest-api:latest && \
+			docker push guliz91/go-rest-api:latest

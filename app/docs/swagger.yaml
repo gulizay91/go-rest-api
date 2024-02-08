@@ -12,6 +12,14 @@ definitions:
     - Male
     - NonBinary
     - Intersex
+  github_com_gulizay91_go-rest-api_pkg_models.Language:
+    enum:
+    - tr
+    - eng
+    type: string
+    x-enum-varnames:
+    - TR
+    - ENG
   github_com_gulizay91_go-rest-api_pkg_models.Media:
     properties:
       images:
@@ -35,12 +43,10 @@ definitions:
     type: object
   github_com_gulizay91_go-rest-api_pkg_models.UserModel:
     properties:
-      _id:
-        type: string
       birthDate:
-        type: integer
+        type: string
       createdDate:
-        type: integer
+        type: string
       email:
         type: string
       firstName:
@@ -50,6 +56,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Gender'
         example: female
+      languages:
+        items:
+          $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Language'
+        type: array
       lastName:
         maxLength: 50
         type: string
@@ -60,8 +70,9 @@ definitions:
       subId:
         type: string
       updatedDate:
-        type: integer
+        type: string
     required:
+    - birthDate
     - email
     - firstName
     - lastName
@@ -137,7 +148,7 @@ paths:
       summary: delete user
       tags:
       - users
-  /api/v1/users/{subId}:
+  /api/v1/user/{subId}:
     get:
       consumes:
       - '*/*'
@@ -164,6 +175,39 @@ paths:
           schema:
             $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
       summary: get user
+      tags:
+      - users
+  /api/v1/user/{subId}/upload-media:
+    patch:
+      consumes:
+      - multipart/form-data
+      description: upload user's images
+      parameters:
+      - description: subId
+        in: path
+        name: subId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+      summary: upload images
       tags:
       - users
   /health:

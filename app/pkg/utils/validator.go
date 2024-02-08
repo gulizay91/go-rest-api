@@ -9,10 +9,14 @@ import (
 
 func Validate(model interface{}) *[]models.ValidationErrors {
 	v := validator.New()
-	RegisterEnumValidator(v)
-	err := v.Struct(model)
+	err := RegisterEnumValidator(v)
+	if err != nil {
+		log.Panicf("Enum Validation Register error: %v", err.Error())
+		return nil
+	}
+	err = v.Struct(model)
 	if err == nil {
-		log.Trace("Validation succeeded.")
+		log.Debug("Validation succeeded")
 		return nil
 	}
 
@@ -30,8 +34,12 @@ type EnumValid interface {
 	Valid() bool
 }
 
-func RegisterEnumValidator(v *validator.Validate) {
-	v.RegisterValidation("enum", ValidateEnum)
+func RegisterEnumValidator(v *validator.Validate) error {
+	err := v.RegisterValidation("enum", ValidateEnum)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func ValidateEnum(fl validator.FieldLevel) bool {

@@ -35,7 +35,7 @@ func InitFiber() *fiber.App {
 
 func registerRouters(app *fiber.App) {
 
-	userHandler := handlers.NewUserHandler(service.NewUserService(userRepository))
+	userHandler := handlers.NewUserHandler(service.NewUserService(userRepository), service.NewAwsService(), config)
 	routers.NewRouter(userHandler, app).AddRouter()
 
 	log.Debug("Routers Registered.")

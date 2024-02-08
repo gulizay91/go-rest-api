@@ -22,3 +22,24 @@ func (c Gender) Valid() bool {
 	}
 	return false
 }
+
+// swagger:parameters Language
+type Language string
+
+const (
+	TR  Language = "tr"
+	ENG Language = "eng"
+)
+
+var Languages = []Language{
+	TR, ENG,
+}
+
+func (c Language) Valid() bool {
+	for _, v := range Languages {
+		if c == v {
+			return true
+		}
+	}
+	return false
+}

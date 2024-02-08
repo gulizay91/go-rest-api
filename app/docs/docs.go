@@ -109,7 +109,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{subId}": {
+        "/api/v1/user/{subId}": {
             "get": {
                 "description": "get user",
                 "consumes": [
@@ -134,6 +134,56 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/{subId}/upload-media": {
+            "patch": {
+                "description": "upload user's images",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "upload images",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "subId",
+                        "name": "subId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
                         }
@@ -194,6 +244,17 @@ const docTemplate = `{
                 "Intersex"
             ]
         },
+        "github_com_gulizay91_go-rest-api_pkg_models.Language": {
+            "type": "string",
+            "enum": [
+                "tr",
+                "eng"
+            ],
+            "x-enum-varnames": [
+                "TR",
+                "ENG"
+            ]
+        },
         "github_com_gulizay91_go-rest-api_pkg_models.Media": {
             "type": "object",
             "required": [
@@ -229,20 +290,18 @@ const docTemplate = `{
         "github_com_gulizay91_go-rest-api_pkg_models.UserModel": {
             "type": "object",
             "required": [
+                "birthDate",
                 "email",
                 "firstName",
                 "lastName",
                 "subId"
             ],
             "properties": {
-                "_id": {
+                "birthDate": {
                     "type": "string"
                 },
-                "birthDate": {
-                    "type": "integer"
-                },
                 "createdDate": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -259,6 +318,12 @@ const docTemplate = `{
                     ],
                     "example": "female"
                 },
+                "languages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.Language"
+                    }
+                },
                 "lastName": {
                     "type": "string",
                     "maxLength": 50
@@ -273,7 +338,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedDate": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         }

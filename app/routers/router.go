@@ -37,8 +37,9 @@ func (router *Router) AddRouter() {
 	route := router.appRouter.Group("/api/v1")
 
 	route.Post("/user", router.userHandler.CreateUser)
-	route.Get("/users/:subId", router.userHandler.GetUser)
+	route.Get("/user/:subId", router.userHandler.GetUser)
 	route.Delete("/user/:id", router.userHandler.DeleteUser)
+	route.Patch("/user/:subId/upload-media", router.userHandler.UploadUserImages)
 }
 
 // HealthCheck godoc

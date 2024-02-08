@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"encoding/json"
+	"github.com/gofiber/fiber/v2/log"
+	configs "github.com/gulizay91/go-rest-api/config"
 	"net/http"
 	"time"
 
@@ -14,11 +17,13 @@ import (
 )
 
 type UserHandler struct {
-	Service service.UserService
+	UserService service.UserService
+	AwsService  service.AwsService
+	AppConfig   *configs.Config
 }
 
-func NewUserHandler(service service.UserService) UserHandler {
-	return UserHandler{Service: service}
+func NewUserHandler(userService service.UserService, awsService service.AwsService, config *configs.Config) UserHandler {
+	return UserHandler{UserService: userService, AwsService: awsService, AppConfig: config}
 }
 
 // CreateUser
@@ -37,8 +42,10 @@ func (h UserHandler) CreateUser(c *fiber.Ctx) error {
 	var user *models.UserModel
 	result := models.NewErrorServiceResponseModel(nil)
 	result.StatusCode = http.StatusBadRequest
-	if err := c.BodyParser(&user); err != nil {
+
+	if err := json.Unmarshal(c.Body(), &user); err != nil {
 		result.Message = err.Error()
+		log.Error(err)
 		return c.Status(result.StatusCode).JSON(result)
 	}
 
@@ -49,8 +56,7 @@ func (h UserHandler) CreateUser(c *fiber.Ctx) error {
 	}
 	var newUserEntity *entities.User = mappers.MapUserModelToUser(user)
 	newUserEntity.CreatedDate = primitive.NewDateTimeFromTime(time.Now().UTC())
-	newUserEntity.UpdatedDate = primitive.NewDateTimeFromTime(time.Now().UTC())
-	result, err := h.Service.Insert(newUserEntity)
+	result, err := h.UserService.Insert(newUserEntity)
 
 	if err != nil || result.Success == false {
 		return c.Status(result.StatusCode).JSON(result)
@@ -69,12 +75,13 @@ func (h UserHandler) CreateUser(c *fiber.Ctx) error {
 // @Success 200 {object} models.ServiceResponseModel
 // @Failure 404 {object} models.ServiceResponseModel
 // @Failure 500 {object} models.ServiceResponseModel
-// @Router /api/v1/users/{subId} [get]
+// @Router /api/v1/user/{subId} [get]
 func (h UserHandler) GetUser(c *fiber.Ctx) error {
 	subId := c.Params("subId")
-	result, err := h.Service.Get(subId)
+	result, err := h.UserService.Get(subId)
 
 	if err != nil {
+		log.Error(err)
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
@@ -98,11 +105,53 @@ func (h UserHandler) DeleteUser(c *fiber.Ctx) error {
 	query := c.Params("id")
 	cnv, _ := primitive.ObjectIDFromHex(query)
 
-	result, err := h.Service.Delete(cnv)
+	result, err := h.UserService.Delete(cnv)
 
 	if err != nil || result == false {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"Success": false})
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{"Success": true})
+}
+
+// UploadUserImages
+// @Summary upload images
+// @Description upload user's images
+// @Tags users
+// @Accept multipart/form-data
+// @Produce json
+// @Param  subId  path string true  "subId"
+// @Success 200 {object} models.ServiceResponseModel
+// @Failure 404 {object} models.ServiceResponseModel
+// @Failure 400 {object} models.ServiceResponseModel
+// @Failure 500 {object} models.ServiceResponseModel
+// @Router /api/v1/user/{subId}/upload-media [patch]
+func (h UserHandler) UploadUserImages(c *fiber.Ctx) error {
+	subId := c.Params("subId")
+	result := models.NewErrorServiceResponseModel(nil)
+	result.StatusCode = http.StatusBadRequest
+
+	// Parse the multipart form:
+	form, err := c.MultipartForm()
+	if err != nil {
+		result.Message = err.Error()
+		log.Error(err)
+		return c.Status(result.StatusCode).JSON(result)
+	}
+
+	// Get all files from "images" key:
+	files := form.File["images"] // => []*multipart.FileHeader
+
+	var uploadModel *models.UploadS3FileModel = &models.UploadS3FileModel{
+		BucketName: h.AppConfig.AwsService.S3Service.Bucket,
+		FilePath:   "media/" + subId,
+		Files:      files,
+	}
+	result, err = h.AwsService.UploadToS3(uploadModel)
+	if err != nil || result.Success == false {
+		log.Error(err)
+		return c.Status(result.StatusCode).JSON(result)
+	}
+
+	return c.Status(http.StatusCreated).JSON(result)
 }

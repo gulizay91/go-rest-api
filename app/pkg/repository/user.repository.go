@@ -29,7 +29,7 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 }
 
 func (r UserRepository) GetCollectionIndexes() []mongo.IndexModel {
-	indexes := []mongo.IndexModel{}
+	var indexes []mongo.IndexModel
 	// compound unique index
 	indexes = append(indexes, mongo.IndexModel{
 		Keys:    bson.D{{Key: "subId", Value: 1}, {Key: "email", Value: 1}},
