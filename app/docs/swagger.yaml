@@ -177,6 +177,39 @@ paths:
       summary: get user
       tags:
       - users
+  /api/v1/user/{subId}/media:
+    get:
+      consumes:
+      - application/json
+      description: get user's images
+      parameters:
+      - description: subId
+        in: path
+        name: subId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel'
+      summary: get images
+      tags:
+      - users
   /api/v1/user/{subId}/upload-media:
     patch:
       consumes:

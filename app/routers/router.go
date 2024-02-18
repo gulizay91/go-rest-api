@@ -40,6 +40,7 @@ func (router *Router) AddRouter() {
 	route.Get("/user/:subId", router.userHandler.GetUser)
 	route.Delete("/user/:id", router.userHandler.DeleteUser)
 	route.Patch("/user/:subId/upload-media", router.userHandler.UploadUserImages)
+	route.Get("/user/:subId/media", router.userHandler.GetUserImages)
 }
 
 // HealthCheck godoc

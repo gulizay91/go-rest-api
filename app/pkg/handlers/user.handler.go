@@ -141,17 +141,79 @@ func (h UserHandler) UploadUserImages(c *fiber.Ctx) error {
 
 	// Get all files from "images" key:
 	files := form.File["images"] // => []*multipart.FileHeader
-
-	var uploadModel *models.UploadS3FileModel = &models.UploadS3FileModel{
-		BucketName: h.AppConfig.AwsService.S3Service.Bucket,
-		FilePath:   "media/" + subId,
-		Files:      files,
+	if len(files) > 6 {
+		result.Message = "The number of objects cannot be greater than 6!"
+		return c.Status(result.StatusCode).JSON(result)
 	}
-	result, err = h.AwsService.UploadToS3(uploadModel)
+
+	// get user from db
+	resultExistUser, err := h.UserService.Get(subId)
+	if err != nil {
+		log.Error(err)
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	if resultExistUser.Success == false {
+		return c.Status(http.StatusNotFound).JSON(resultExistUser)
+	}
+
+	// upload images to s3
+	var uploadModel *models.UploadS3FileModel = &models.UploadS3FileModel{
+		BucketName:             h.AppConfig.AwsService.S3Service.Bucket,
+		FilePath:               models.UserMediaPath + "/" + subId,
+		Files:                  files,
+		BeforeDeleteAllObjects: true,
+		CdnUrl:                 h.AppConfig.AwsService.S3Service.CdnUrl,
+	}
+	result, err = h.AwsService.UploadToS3Path(uploadModel)
 	if err != nil || result.Success == false {
 		log.Error(err)
 		return c.Status(result.StatusCode).JSON(result)
 	}
 
-	return c.Status(http.StatusCreated).JSON(result)
+	// update user media urls
+	resultData := result.Data.(models.UploadedS3FileModel)
+	var imageUrls []string
+	if resultData.FileCdnUrls != nil {
+		imageUrls = resultData.FileCdnUrls
+	} else {
+		imageUrls = resultData.FileS3Urls
+	}
+	resultUpdate, err := h.UserService.UpdateMediaImages(subId, imageUrls)
+
+	if err != nil || resultUpdate.Success == false {
+		return c.Status(result.StatusCode).JSON(resultUpdate)
+	}
+
+	return c.Status(http.StatusOK).JSON(result)
+}
+
+// GetUserImages
+// @Summary get images
+// @Description get user's images
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param  subId  path string true  "subId"
+// @Success 200 {object} models.ServiceResponseModel
+// @Failure 404 {object} models.ServiceResponseModel
+// @Failure 400 {object} models.ServiceResponseModel
+// @Failure 500 {object} models.ServiceResponseModel
+// @Router /api/v1/user/{subId}/media [get]
+func (h UserHandler) GetUserImages(c *fiber.Ctx) error {
+	subId := c.Params("subId")
+	result := models.NewErrorServiceResponseModel(nil)
+	result.StatusCode = http.StatusBadRequest
+
+	// Get all files from path (media/subId)
+	var listModel *models.ListS3FileModel = &models.ListS3FileModel{
+		BucketName: h.AppConfig.AwsService.S3Service.Bucket,
+		FilePath:   models.UserMediaPath + "/" + subId,
+	}
+	result, err := h.AwsService.ListObjectsFromS3Path(listModel)
+	if err != nil || result.Success == false {
+		log.Error(err)
+		return c.Status(result.StatusCode).JSON(result)
+	}
+
+	return c.Status(http.StatusOK).JSON(result)
 }

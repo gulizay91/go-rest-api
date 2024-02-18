@@ -1,5 +1,7 @@
 package models
 
+const UserMediaPath string = "media"
+
 // swagger:model Gender
 type Gender string
 

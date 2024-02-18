@@ -13,11 +13,13 @@ import (
 )
 
 type IUserRepository interface {
+	GetCollectionIndexes() []mongo.IndexModel
 	Insert(user entities.User) (bool, error)
 	GetAll() ([]entities.User, error)
 	Get(subId string) (entities.User, error)
 	Delete(id primitive.ObjectID) (bool, error)
-	GetCollectionIndexes() []mongo.IndexModel
+	ReplaceOne(subId string, user *entities.User) (bool, error)
+	UpdateOne(subId string, setKeyValue bson.D) (entities.User, error)
 }
 
 type UserRepository struct {
@@ -118,4 +120,61 @@ func (r UserRepository) Delete(id primitive.ObjectID) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (r UserRepository) ReplaceOne(subId string, user *entities.User) (bool, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"$and": []bson.M{
+			{"subId": subId},
+		},
+	}
+
+	result, err := r.Users.ReplaceOne(ctx, filter, user)
+
+	if err != nil {
+		log.Panic(err)
+		return false, err
+	}
+
+	return result.ModifiedCount == result.MatchedCount, nil
+}
+
+func (r UserRepository) UpdateOne(subId string, setKeyValue bson.D) (entities.User, error) {
+	var user entities.User
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"$and": []bson.M{
+			{"subId": subId},
+		},
+	}
+
+	update := bson.D{{"$set", setKeyValue}}
+
+	result, err := r.Users.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		log.Panic(err)
+		return user, err
+	}
+
+	if result.ModifiedCount == result.MatchedCount {
+		if err := r.Users.FindOne(ctx, filter).Decode(&user); err != nil {
+
+			if err.Error() == "mongo: no documents in result" {
+				return user, nil
+			}
+
+			log.Panic(err)
+			return user, err
+		}
+	}
+
+	return user, nil
 }

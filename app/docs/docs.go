@@ -153,6 +153,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/{subId}/media": {
+            "get": {
+                "description": "get user's images",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "get images",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "subId",
+                        "name": "subId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_gulizay91_go-rest-api_pkg_models.ServiceResponseModel"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/{subId}/upload-media": {
             "patch": {
                 "description": "upload user's images",

@@ -89,6 +89,7 @@ func (config AwsServiceConfig) Validate() error {
 
 type S3ServiceConfig struct {
 	Bucket string
+	CdnUrl *string
 }
 
 func (config S3ServiceConfig) Validate() error {

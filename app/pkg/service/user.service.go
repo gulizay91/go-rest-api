@@ -1,6 +1,7 @@
 package service
 
 import (
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 
 	"github.com/gulizay91/go-rest-api/pkg/models"
@@ -14,6 +15,7 @@ type IUserService interface {
 	Insert(userEntity entities.User) (*models.ServiceResponseModel, error)
 	Get() (*models.ServiceResponseModel, error)
 	Delete(id primitive.ObjectID) (bool, error)
+	UpdateMediaImages(subId string, mediaImages []string) (*models.ServiceResponseModel, error)
 }
 
 type UserService struct {
@@ -79,4 +81,31 @@ func (s UserService) Delete(id primitive.ObjectID) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (s UserService) UpdateMediaImages(subId string, mediaImages []string) (*models.ServiceResponseModel, error) {
+	var res models.ServiceResponseModel = *models.NewErrorServiceResponseModel(nil)
+
+	if len(mediaImages) < 2 || len(mediaImages) > 6 {
+		res.Message = "Media Images len must be between 2 and 6!"
+		res.StatusCode = http.StatusBadRequest
+		return &res, nil
+	}
+	keyValue := bson.D{{"media.images", mediaImages}}
+	result, err := s.Repo.UpdateOne(subId, keyValue)
+
+	if err != nil && result.Id == primitive.NilObjectID {
+		res.Message = err.Error()
+		res.StatusCode = http.StatusNoContent
+		return &res, err
+	}
+
+	if err != nil {
+		res.Message = err.Error()
+		return &res, err
+	}
+
+	res = *models.NewSuccessServiceResponseModel(result)
+	res.StatusCode = http.StatusOK
+	return &res, nil
 }
