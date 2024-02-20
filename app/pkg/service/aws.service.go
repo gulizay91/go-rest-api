@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/gulizay91/go-rest-api/config"
 	"github.com/gulizay91/go-rest-api/pkg/models"
 	"github.com/gulizay91/go-rest-api/pkg/utils"
 	"net/http"
@@ -26,13 +27,20 @@ type AwsService struct {
 	S3Client *s3.Client
 }
 
-func NewAwsService() AwsService {
+func NewAwsService(appConfig *config.Config) AwsService {
 	// aws config
-	cfg, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		log.Panicf("error: %v", err)
-	}
-	S3Client := s3.NewFromConfig(cfg)
+	//cfg, err := awsConfig.LoadDefaultConfig(context.TODO(),
+	//cfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(appConfig.AwsService.Region))
+	//	awsConfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(appConfig.AwsService.AccessKey, appConfig.AwsService.SecretKey, "")),
+	//)
+	//if err != nil {
+	//	log.Panicf("error: %v", err)
+	//}
+	//S3Client := s3.NewFromConfig(cfg)
+	S3Client := s3.New(s3.Options{
+		Region:      appConfig.AwsService.Region,
+		Credentials: aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(appConfig.AwsService.AccessKey, appConfig.AwsService.SecretKey, "")),
+	})
 	return AwsService{S3Client}
 }
 
