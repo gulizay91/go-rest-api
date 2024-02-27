@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"github.com/gofiber/fiber/v2/log"
-
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gulizay91/go-rest-api/pkg/models"
+	"reflect"
 )
 
 func Validate(model interface{}) *[]models.ValidationErrors {
@@ -21,9 +21,9 @@ func Validate(model interface{}) *[]models.ValidationErrors {
 	}
 
 	var validationErrors []models.ValidationErrors
-	log.Warn("Validation failed:")
+	log.Warn("Validation failed!")
 	for _, e := range err.(validator.ValidationErrors) {
-		log.Warn("Field: %s, Error: %s\n", e.Field(), e.Tag())
+		log.Warnf("Field: %s, Error: %s", e.Field(), e.Tag())
 		validationErrors = append(validationErrors, models.ValidationErrors{Field: e.StructNamespace(), Error: e.Tag()})
 	}
 
@@ -31,11 +31,11 @@ func Validate(model interface{}) *[]models.ValidationErrors {
 }
 
 type EnumValid interface {
-	Valid() bool
+	IsValid() bool
 }
 
 func RegisterEnumValidator(v *validator.Validate) error {
-	err := v.RegisterValidation("enum", ValidateEnum)
+	err := v.RegisterValidation("enum", ValidateEnum, true)
 	if err != nil {
 		return err
 	}
@@ -43,8 +43,14 @@ func RegisterEnumValidator(v *validator.Validate) error {
 }
 
 func ValidateEnum(fl validator.FieldLevel) bool {
+	log.Debugf("validation for %s", fl.FieldName())
+	log.Debugf("field kind %v", fl.Field().Kind())
+	if fl.Field().Kind() == reflect.Ptr {
+		log.Debug("field is nil, default valid")
+		return true
+	}
 	if enum, ok := fl.Field().Interface().(EnumValid); ok {
-		return enum.Valid()
+		return enum.IsValid()
 	}
 	return false
 }

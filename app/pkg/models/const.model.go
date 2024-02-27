@@ -16,7 +16,7 @@ var Genders = []Gender{
 	Female, Male, NonBinary, Intersex,
 }
 
-func (c Gender) Valid() bool {
+func (c Gender) IsValid() bool {
 	for _, v := range Genders {
 		if c == v {
 			return true
@@ -37,7 +37,7 @@ var Languages = []Language{
 	TR, ENG,
 }
 
-func (c Language) Valid() bool {
+func (c Language) IsValid() bool {
 	for _, v := range Languages {
 		if c == v {
 			return true
