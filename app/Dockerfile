@@ -7,7 +7,7 @@ FROM golang:1.21.0 as builder
 WORKDIR /app
 COPY go.mod go.sum ./
 
-# curl -v "http://127.0.0.1:8091/health"
+# curl -v "http://127.0.0.1:8061/health"
 RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
 && apt-get -y update \
 && apt-get -y install curl \
@@ -36,7 +36,7 @@ ENV TEST_KEY cameFromDockerfile
 ENV K8SCLUSTER cameFromDockerfile
 ENV VAULTOPTIONS__MOUNTPOINT cameFromDockerfile
 
-ARG SERVER_PORT=8091
+ARG SERVER_PORT=8061
 ARG SERVER_ADRR=127.0.0.1
 ENV SERVER__PORT $SERVER_PORT
 ENV SERVER__ADRR $SERVER_ADRR

@@ -78,7 +78,7 @@ definitions:
     - lastName
     - subId
     type: object
-host: localhost:8091
+host: localhost:8061
 info:
   contact:
     email: gulizay91@gmail.com

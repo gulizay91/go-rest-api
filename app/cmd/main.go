@@ -14,7 +14,7 @@ import "github.com/gulizay91/go-rest-api/cmd/services"
 // @license.name MIT License
 // @license.url https://opensource.org/licenses/MIT
 
-// @host localhost:8091
+// @host localhost:8061
 // @BasePath /
 // @schemes http
 

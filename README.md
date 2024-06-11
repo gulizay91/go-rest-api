@@ -55,8 +55,8 @@ go install github.com/swaggo/swag/cmd/swag@latest
 
 ## Generate Swagger Doc
 ```sh
-# /lemodate-profile-api>app>
-swag init --parseDependency -g cmd/main.go -o docs
+# /lemodate-profile-api>
+swag init --parseDependency -g app/cmd/main.go -o app/docs
 ```
 
 ## Docker
@@ -64,7 +64,7 @@ swag init --parseDependency -g cmd/main.go -o docs
 ```sh
 # /go-rest-api>
 docker build -t go-rest-api ./app
-docker run -p 8091:8091 -e SERVICE__ENVIRONMENT=development --name go-rest-api go-rest-api
+docker run -p 8061:8061 -e SERVICE__ENVIRONMENT=development --name go-rest-api go-rest-api
 ```
 or you can use phony target
 ```sh

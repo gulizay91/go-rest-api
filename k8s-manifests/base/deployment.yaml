@@ -26,7 +26,7 @@ spec:
             - configMapRef:
                 name: go-rest-api-configs
           ports:
-            - containerPort: 8091
+            - containerPort: 8061
           resources:
             requests:
               cpu: 128m
@@ -37,7 +37,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8091
+              port: 8061
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -47,7 +47,7 @@ spec:
             httpGet:
               #path: /ready
               path: /health
-              port: 8091
+              port: 8061
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
